@@ -111,7 +111,7 @@ export const getUserProfile = async (authId) => {
   try {
     const response = await apiClient.get(`/users/${authId}`);
     const userData = response.data?.data || response.data;
-    if (userData && (userData._id || userData.id)) return { data: userData };
+    if (userData && userData._id) return { data: userData };
     return { data: null };
   } catch (error) {
     // 400 -> Student Not Found (not an error for UI; means no profile yet)
@@ -312,9 +312,9 @@ export const getApplication = async (studId) => {
 // PDF AND DOCUMENT FUNCTIONS
 // =============================================================================
 
-export const generateStudentPdf = async (studId) => {
+export const generateStudentPdf = async (studId,applicationId) => {
   try {
-    const response = await apiClient.post(`/api/users/pdf/generate/${studId}`);
+    const response = await apiClient.post(`/api/users/pdf/generate/${studId}/${applicationId}`);
     return response.data;
   } catch (error) {
     console.error("Error generating PDF:", error.response?.data || error.message);
@@ -327,9 +327,8 @@ export const generateStudentPdf = async (studId) => {
 // =============================================================================
 
 export const getFormsByStudent = async (studId) => {
-  console.log(`🔍 Fetching forms for student: ${studId}`);
-  
-  // Try multiple known endpoints and normalize into an array of applications
+  // console.log(`🔍 Fetching forms for student: ${studId}`);
+  debugger
   const candidates = [
     `/form/student/${studId}`,        // some deployments
     `/applications/${studId}`,        // application-routes get by student
@@ -342,10 +341,10 @@ export const getFormsByStudent = async (studId) => {
   let lastErr = null;
   for (const path of candidates) {
     try {
-      console.log(`🔍 Trying endpoint: ${path}`);
+      // console.log(`🔍 Trying endpoint: ${path}`);
       const res = await apiClient.get(path, { headers: { 'X-Silent-Request': '1' } });
       const raw = res?.data;
-      console.log(`✅ Response from ${path}:`, raw);
+      // console.log(`✅ Response from ${path}:`, raw);
 
       // If the endpoint returns a single object, wrap it
       const normalizedArray = Array.isArray(raw)
@@ -375,6 +374,6 @@ export const getFormsByStudent = async (studId) => {
     console.error('Error fetching forms by student:', lastErr.response?.data || lastErr.message);
   }
   
-  console.log(`📊 Final result: Found ${all.length} forms for student ${studId}:`, all);
+  // console.log(`📊 Final result: Found ${all.length} forms for student ${studId}:`, all);
   return { data: all };
 };

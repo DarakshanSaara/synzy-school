@@ -30,7 +30,7 @@ apiClient.interceptors.request.use(
     // Optional silent flag to reduce console noise for internal retries
     const isSilent = config.headers && (config.headers['X-Silent-Request'] === '1');
     if (!isSilent) {
-      console.log('📤 API Request:', config.method?.toUpperCase(), config.url);
+      // console.log('📤 API Request:', config.method?.toUpperCase(), config.url);
     }
     return config;
   },
@@ -41,7 +41,7 @@ apiClient.interceptors.response.use(
   (response) => {
     const isSilent = response.config?.headers && (response.config.headers['X-Silent-Request'] === '1');
     if (!isSilent) {
-      console.log('✅ API Response:', response.config.url, response.status);
+      // console.log('✅ API Response:', response.config.url, response.status);
     }
     return response;
   },
