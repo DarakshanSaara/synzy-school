@@ -55,22 +55,14 @@ export const fetchStudentPDF = async (studId) => {
 };
 // CORRECTED: Properly fetch from Forms API with debugging
 
-export const fetchStudentApplications = async (schoolIdOrEmail) => {
-    const identity = encodeURIComponent(schoolIdOrEmail || '');
-
-    // Only try the forms endpoint - no fallback to applications
-    try {
-        console.log(`🔍 Fetching forms for school: ${identity}`);
-        console.log(`📍 Full URL will be: /api/form/school/${identity}`);
-        
-        const res = await apiClient.get(`/form/school/${identity}`, { 
+export const fetchStudentApplications = async (schoolId) => {
+    debugger
+    try {        
+        const res = await apiClient.get(`/form/school/${schoolId}`, { 
             headers: { 'X-Silent-Request': '1' } 
         });
         
         const raw = res?.data;
-        console.log(`📦 Raw response:`, raw);
-        
-        // Handle different response structures
         let forms = [];
         if (Array.isArray(raw)) {
             forms = raw;

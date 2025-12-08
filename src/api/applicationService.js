@@ -117,6 +117,7 @@ export const deleteApplication = async (studId) => {
 export const checkFormSubmission = async (schoolId, studId, formId) => {
   try {
     // Get all forms for this student
+    debugger
     const forms = await getFormsByStudent(studId);
     const existingForm = forms.data?.find(form => 
       form.schoolId === schoolId || form.schoolId._id === schoolId
@@ -139,7 +140,8 @@ export const checkFormSubmission = async (schoolId, studId, formId) => {
  * @param {string} formId - Form/Application ID
  * @returns {Promise<Object>} Form submission result
  */
-export const submitFormToSchool = async (schoolId, studId, formId) => {
+export const submitFormToSchool = async (schoolId, studId, formId, applicationId) => {
+  debugger
   try {
     // First check if already submitted
     const submissionCheck = await checkFormSubmission(schoolId, studId, formId);
@@ -151,12 +153,21 @@ export const submitFormToSchool = async (schoolId, studId, formId) => {
         data: submissionCheck.form,
         alreadySubmitted: true
       };
-    }
+    }    
+    
+    // POST request with applicationId in body
+    const response = await apiClient.post(
+      `/form/${schoolId}/${studId}/${formId}`,
+      { applicationId: applicationId,
+        amount: 100
+       }
+    );
 
-    const response = await apiClient.post(`/form/${schoolId}/${studId}/${formId}`);
+    // console.log("✅ Backend response:", response.data);
+
     return response.data;
+
   } catch (error) {
-    // Handle 409 Conflict (duplicate submission)
     if (error.response?.status === 409) {
       console.log('Form already submitted to this school (409 Conflict)');
       return {
@@ -165,10 +176,12 @@ export const submitFormToSchool = async (schoolId, studId, formId) => {
         alreadySubmitted: true
       };
     }
-    console.error('Error submitting form to school:', error.response?.data || error.message);
+
+    console.error('❌ Error submitting form to school:', error.response?.data || error.message);
     throw error.response?.data || error;
   }
 };
+
 
 /**
  * Get forms by student
@@ -258,7 +271,7 @@ export const getSchoolForms = async (schoolId, status = null) => {
       forms = raw.forms;
     }
 
-    console.log(`✅ Fetched ${forms.length} forms for school`);
+    // console.log(`✅ Fetched ${forms.length} forms for school`);
 
     if (forms.length === 0) {
       return { data: [] };
@@ -279,20 +292,20 @@ export const getSchoolForms = async (schoolId, status = null) => {
           studId = form.studId._id;
         }
         
-        console.log(`🔍 Form ${idx} - studId extracted:`, studId, 'from form:', form);
+        // console.log(`🔍 Form ${idx} - studId extracted:`, studId, 'from form:', form);
         
         // Fetch student application data to get name and class
         let studentName = '—';
         let studentClass = '—';
         if (studId) {
           try {
-            console.log(`🔍 Fetching application data for student: ${studId}`);
+            // console.log(`🔍 Fetching application data for student: ${studId}`);
             const appResponse = await apiClient.get(`/applications/${studId}`);
             if (appResponse?.data?.data) {
               const appData = appResponse.data.data;
               studentName = appData.name || '—';
               studentClass = appData.classCompleted || appData.class || '—';
-              console.log(`✅ Found student data: ${studentName}, Class: ${studentClass}`);
+              // console.log(`✅ Found student data: ${studentName}, Class: ${studentClass}`);
             }
           } catch (appError) {
             console.warn(`⚠️ Could not fetch application data for student ${studId}:`, appError.message);
@@ -319,7 +332,7 @@ export const getSchoolForms = async (schoolId, status = null) => {
       })
     );
 
-    console.log(`✅ Normalized ${normalized.length} forms for school`, normalized);
+    // console.log(`✅ Normalized ${normalized.length} forms for school`, normalized);
     return { data: normalized };
     
   } catch (error) {
@@ -380,17 +393,17 @@ export const completeApplicationFlow = async (studId, schoolId, applicationData 
         throw new Error('Application data is required to create new application');
       }
       
-      console.log('Creating new application (First-time applicant)...');
+      // console.log('Creating new application (First-time applicant)...');
       const createResult = await createApplication(applicationData);
       application = createResult.data;
-      console.log('Application created:', application);
+      // console.log('Application created:', application);
     } else {
       // Scenario B: Returning applicant
       console.log('Application already exists (Returning applicant):', application);
     }
     
     // Step 2: Submit form to school using application ID as formId
-    console.log('Submitting form to school...');
+    // console.log('Submitting form to school...');
     const formId = application._id || application.id; // formId = application ID
     const submitResult = await submitFormToSchool(schoolId, studId, formId);
     

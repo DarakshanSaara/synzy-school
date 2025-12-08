@@ -281,6 +281,7 @@ export const deleteSchool = (schoolId) => apiClient.delete(`/admin/schools/${sch
 export const getSchoolByAuthId = async (authId) => {
   if (!authId) return { data: null };
   try {
+    debugger
     console.log(`🔍 Finding school by authId: ${authId}`);
     // ✅ FIXED: Matches router.get('/schools/by-auth/:authId')
     const res = await apiClient.get(`/admin/schools/auth/${encodeURIComponent(authId)}`, {
