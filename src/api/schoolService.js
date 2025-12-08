@@ -121,6 +121,9 @@ export const getActivitiesById = (schoolId) => {
 export const getAlumniBySchool = (schoolId) => {
   return apiClient.get(`/admin/alumnus/${encodeURIComponent(schoolId)}`);
 };
+export const updateAlumniBySchool = (schoolId,data) => {
+  return apiClient.put(`/admin/alumnus/${encodeURIComponent(schoolId)}`,data);
+};
 
 /**
  * Get infrastructure by school ID

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { getSchoolById, getAmenitiesById, getActivitiesById, getInfrastructureById, getFeesAndScholarshipsById, getAcademicsById, getOtherDetailsById, getFacultyById, getAdmissionTimelineById, getTechnologyAdoptionById, getSafetyAndSecurityById, getInternationalExposureById } from "../api/adminService";
+import { getSchoolById,getSchoolById1,getAmenitiesById, getActivitiesById, getInfrastructureById, getFeesAndScholarshipsById, getAcademicsById, getOtherDetailsById, getFacultyById, getAdmissionTimelineById, getTechnologyAdoptionById, getSafetyAndSecurityById, getInternationalExposureById } from "../api/adminService";
 import { toast } from "react-toastify";
 import { validateSchoolId, handleInvalidSchoolId } from "../utils/objectIdUtils";
 import {
@@ -25,7 +25,8 @@ import {
   X,
   Check
 } from "lucide-react";
-import ReviewSection from "../components/ReviewSection";
+import ReviewSection_fixed from "../components/ReviewSection_fixed";
+import { getAlumniBySchool } from "../api/schoolService";
 
 const InfoBox = ({ icon, label, value }) => (
   <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
@@ -53,6 +54,7 @@ const SchoolDetailsPage = ({ shortlist, onShortlistToggle }) => {
   const [academics, setAcademics] = useState(null);
   const [otherDetails, setOtherDetails] = useState(null);
   const [faculty, setFaculty] = useState(null);
+  const [alumni, setAlumni] = useState(null);
   const [admissionTimeline, setAdmissionTimeline] = useState(null);
   const [technologyAdoption, setTechnologyAdoption] = useState(null);
   const [safetyAndSecurity, setSafetyAndSecurity] = useState(null);
@@ -90,7 +92,7 @@ const SchoolDetailsPage = ({ shortlist, onShortlistToggle }) => {
     const fetchSchoolDetails = async () => {
       try {
         setLoading(true);
-        const response = await getSchoolById(schoolId);
+        const response = await getSchoolById1(schoolId);
         const schoolData = response?.data?.data || response?.data;
 
         if (schoolData) {
@@ -210,20 +212,25 @@ const SchoolDetailsPage = ({ shortlist, onShortlistToggle }) => {
               getAdmissionTimelineById(schoolId).catch(() => ({ data: null })),
               getTechnologyAdoptionById(schoolId).catch(() => ({ data: null })),
               getSafetyAndSecurityById(schoolId).catch(() => ({ data: null })),
-              getInternationalExposureById(schoolId).catch(() => ({ data: null }))
+              getInternationalExposureById(schoolId).catch(() => ({ data: null })),
+              getAlumniBySchool(schoolId).catch(() => ({ data: null })) 
             ]);
+            
+            
 
             const otherDetailsRes = remainingDetails[0];
             const admissionRes = remainingDetails[1];
             const technologyRes = remainingDetails[2];
             const safetyRes = remainingDetails[3];
             const internationalRes = remainingDetails[4];
+            const alumniRes = remainingDetails[5];
 
             setOtherDetails(otherDetailsRes?.value?.data?.data || otherDetailsRes?.value?.data);
             setAdmissionTimeline(admissionRes?.value?.data?.data || admissionRes?.value?.data);
             setTechnologyAdoption(technologyRes?.value?.data?.data || technologyRes?.value?.data);
             setSafetyAndSecurity(safetyRes?.value?.data?.data || safetyRes?.value?.data);
             setInternationalExposure(internationalRes?.value?.data?.data || internationalRes?.value?.data);
+            setAlumni(alumniRes?.value?.data?.data || alumniRes?.value?.data);
           } catch (e) {
             console.error("Error loading additional details:", e);
           }
@@ -1641,6 +1648,74 @@ const SchoolDetailsPage = ({ shortlist, onShortlistToggle }) => {
             </div>
           )}
         </div>
+        {/* Alumni Section - WAS MISSING */}
+        {alumni && (alumni.famousAlumnies?.length > 0 || alumni.topAlumnis?.length > 0 || alumni.alumnis?.length > 0) && (
+          <div className="bg-white shadow-lg rounded-lg p-6">
+            <div className="flex items-center mb-6">
+              <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center mr-3">
+                <Award size={16} className="text-amber-600" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold text-gray-800">Alumni Achievements</h2>
+                <p className="text-sm text-gray-600">Notable graduates and success stories</p>
+              </div>
+            </div>
+
+            {/* Famous Alumni */}
+            {alumni.famousAlumnies && alumni.famousAlumnies.length > 0 && (
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold text-gray-700 mb-3">🌟 Famous Alumni</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {alumni.famousAlumnies.map((alum, index) => (
+                    <div key={index} className="bg-amber-50 border border-amber-200 rounded-lg p-4 flex items-center">
+                      <div className="w-10 h-10 bg-amber-200 rounded-full flex items-center justify-center text-amber-700 font-bold mr-3">
+                        {alum.name.charAt(0)}
+                      </div>
+                      <div>
+                        <div className="font-semibold text-gray-800">{alum.name}</div>
+                        <div className="text-sm text-amber-700">{alum.profession}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Top Performers */}
+            {alumni.topAlumnis && alumni.topAlumnis.length > 0 && (
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold text-gray-700 mb-3">🎓 Top Performers</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {alumni.topAlumnis.map((alum, index) => (
+                    <div key={index} className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                      <div className="flex justify-between items-center">
+                        <span className="font-medium text-gray-800">{alum.name}</span>
+                        <span className="bg-green-100 text-green-800 text-xs font-bold px-2 py-1 rounded">
+                          {alum.percentage}%
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Other Alumni */}
+            {alumni.alumnis && alumni.alumnis.length > 0 && (
+              <div>
+                <h3 className="text-lg font-semibold text-gray-700 mb-3">👥 Other Notable Alumni</h3>
+                <div className="flex flex-wrap gap-2">
+                  {alumni.alumnis.map((alum, index) => (
+                    <div key={index} className="bg-gray-50 border border-gray-200 rounded-full px-4 py-1 text-sm text-gray-700">
+                      <span className="font-medium">{alum.name}</span>
+                      {alum.percentage && <span className="text-gray-500 ml-1">({alum.percentage}%)</span>}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Admission Process Timeline Section */}
         <div className="bg-white shadow-lg rounded-lg p-6">
@@ -1880,7 +1955,7 @@ const SchoolDetailsPage = ({ shortlist, onShortlistToggle }) => {
         )}
 
         {/* Reviews Section */}
-        <ReviewSection schoolId={school._id} />
+        <ReviewSection_fixed schoolId={school._id} />
 
         {/* Required Documents Section */}
         <div className="bg-white shadow-lg rounded-lg p-6">

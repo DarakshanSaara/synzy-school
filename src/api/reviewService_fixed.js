@@ -24,6 +24,7 @@ export const submitReview = async (reviewData) => {
   try {
     // Transform frontend data to match backend schema
     const backendData = {
+      studentId: reviewData.studentId,
       schoolId: reviewData.schoolId,
       text: reviewData.comment, // frontend uses 'comment', backend uses 'text'
       ratings: reviewData.rating, // frontend uses 'rating', backend uses 'ratings'
@@ -33,7 +34,7 @@ export const submitReview = async (reviewData) => {
         studentId: reviewData.studentId
       }
     };
-    const response = await apiClient.post('/reviews', backendData);
+    const response = await apiClient.post(`/reviews/`, backendData);
     return response.data;
   } catch (error) {
     throw error;

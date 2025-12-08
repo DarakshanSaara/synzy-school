@@ -131,6 +131,8 @@ export const addInternationalExposure = (data) =>
 
 export const getSchoolById = (schoolId, config) =>
   apiClient.get(`/admin/schools/auth/${encodeURIComponent(schoolId)}`, config);
+export const getSchoolById1 = (schoolId, config) =>
+  apiClient.get(`/admin/schools/${encodeURIComponent(schoolId)}`, config);
 
 export const updateSchoolInfo = (schoolId, data) =>
   apiClient.put(`/admin/schools/auth/${encodeURIComponent(schoolId)}`, data);
@@ -281,7 +283,7 @@ export const getSchoolByAuthId = async (authId) => {
   try {
     console.log(`🔍 Finding school by authId: ${authId}`);
     // ✅ FIXED: Matches router.get('/schools/by-auth/:authId')
-    const res = await apiClient.get(`/admin/schools/by-auth/${encodeURIComponent(authId)}`, {
+    const res = await apiClient.get(`/admin/schools/auth/${encodeURIComponent(authId)}`, {
       headers: { 'X-Silent-Request': '1' }
     });
     console.log(`✅ Found school by authId:`, res?.data);

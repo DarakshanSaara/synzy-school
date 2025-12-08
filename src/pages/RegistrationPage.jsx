@@ -8,8 +8,8 @@ import apiClient from "../api/axios";
 import { 
   addSchool, 
   addAmenities, 
-  addActivities, 
-  // addAlumni, // Commented out - no alumni UI yet
+  addActivities,
+  addAlumni,  
   addInfrastructure, 
   addOtherDetails, 
   addFeesAndScholarships,
@@ -46,6 +46,11 @@ import {
   updateAcademics
   , getSchoolByAuthId
 } from "../api/adminService";
+import { 
+  getAlumniBySchool,
+  updateAlumniBySchool, 
+} from "../api/schoolService";
+
 
 
 const FormField = ({
@@ -811,16 +816,24 @@ const RegistrationPage = () => {
 
       // Add alumni if any (skip for now as there's no alumni UI)
       // TODO: Uncomment when alumni UI is added
-      /*
+      
       if (famousAlumnies.length > 0 || topAlumnies.length > 0 || otherAlumnies.length > 0) {
-        promises.push(addAlumni({
+        
+        const alumniPayload = {
           schoolId,
-          famousAlumnies,
-          topAlumnies,
-          otherAlumnies
-        }));
+          famousAlumnies: famousAlumnies, 
+          // ⚠️ KEY FIX: Map frontend 'topAlumnies' -> backend 'topAlumnis'
+          topAlumnis: topAlumnies,        
+          // ⚠️ KEY FIX: Map frontend 'otherAlumnies' -> backend 'alumnis'
+          alumnis: otherAlumnies          
+        };
+
+        // Use updateOrAdd to Handle PUT (Update) or POST (Create)
+        promises.push(
+           updateOrAdd(updateAlumniBySchool, addAlumni, schoolId, alumniPayload)
+        );
       }
-      */
+      
 
       // Add/Update infrastructure
       if (formData.infraLabTypes?.length > 0 || formData.infraSportsTypes?.length > 0 || formData.infraLibraryBooks || formData.infraSmartClassrooms) {
@@ -1525,7 +1538,8 @@ const RegistrationPage = () => {
         techRes,
         intlRes,
         facultyRes,
-        timelineRes
+        timelineRes,
+        alumniRes
       ] = await Promise.allSettled([
         getAmenitiesById(school._id),
         getActivitiesById(school._id),
@@ -1537,7 +1551,8 @@ const RegistrationPage = () => {
         getTechnologyAdoptionById(school._id),
         getInternationalExposureById(school._id),
         getFacultyById(school._id),
-        getAdmissionTimelineById(school._id)
+        getAdmissionTimelineById(school._id),
+        getAlumniBySchool(school._id)
       ]);
 
       const val = (s) => (s && s.status === 'fulfilled') ? (s.value?.data?.data ?? s.value?.data) : null;
@@ -1552,7 +1567,9 @@ const RegistrationPage = () => {
       const intl = val(intlRes) || {};
       const faculty = val(facultyRes) || {};
       const timeline = val(timelineRes) || {};
-
+      const alumniData = (alumniRes.status === 'fulfilled' && alumniRes.value?.data?.data) 
+      ? alumniRes.value.data.data 
+      : {};
       // Prefill arrays/booleans safely (preserve 0/false values)
       setFormData(prev => ({
         ...prev,
@@ -2017,9 +2034,9 @@ const RegistrationPage = () => {
       // Prefill complex UI-specific states
       setCustomAmenities(Array.isArray(amenities.customAmenities) ? amenities.customAmenities : []);
       setCustomActivities(Array.isArray(activities.customActivities) ? activities.customActivities : []);
-      setFamousAlumnies(Array.isArray((faculty.famousAlumnies)) ? faculty.famousAlumnies : []);
-      setTopAlumnies(Array.isArray((faculty.topAlumnies)) ? faculty.topAlumnies : []);
-      setOtherAlumnies(Array.isArray((faculty.otherAlumnies)) ? faculty.otherAlumnies : []);
+      setFamousAlumnies(Array.isArray(alumniData.famousAlumnies) ? alumniData.famousAlumnies : []);
+      setTopAlumnies(Array.isArray(alumniData.topAlumnis) ? alumniData.topAlumnis : []);
+      setOtherAlumnies(Array.isArray(alumniData.alumnis) ? alumniData.alumnis : []);
       setFacultyQuality(Array.isArray(faculty.facultyMembers) ? faculty.facultyMembers.map(m => ({
         name: m.name || '',
         qualification: m.qualification || '',

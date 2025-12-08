@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { getSchoolReviews, getStudentReviews, submitReview, updateReview, likeReview } from '../api/reviewService';
+import { getSchoolReviews, getStudentReviews, submitReview, updateReview, likeReview } from '../api/reviewService_fixed';
 import { toast } from 'react-toastify';
 import { Star, Heart, MessageCircle, User } from 'lucide-react';
 
-const ReviewSection = ({ schoolId }) => {
+const ReviewSection_fixed = ({ schoolId }) => {
   const { user: currentUser } = useAuth();
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -99,7 +99,7 @@ const ReviewSection = ({ schoolId }) => {
 
       const reviewData = {
         schoolId,
-        studentId: currentUser.authId,
+        studentId: currentUser._id,
         studentName: currentUser.name || currentUser.username || 'Anonymous Student',
         studentEmail: currentUser.email || 'student@example.com',
         rating: newReview.rating,
