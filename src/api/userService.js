@@ -314,7 +314,7 @@ export const getApplication = async (studId) => {
 
 export const generateStudentPdf = async (studId,applicationId) => {
   try {
-    const response = await apiClient.post(`/api/users/pdf/generate/${studId}/${applicationId}`);
+    const response = await apiClient.post(`/users/pdf/generate/${studId}/${applicationId}`);
     return response.data;
   } catch (error) {
     console.error("Error generating PDF:", error.response?.data || error.message);
