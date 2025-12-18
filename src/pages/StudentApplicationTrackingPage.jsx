@@ -540,23 +540,7 @@ else if (typeof application?._id === 'string') {
                 <div className="text-sm text-gray-700 whitespace-pre-wrap">
                   {selectedInterviewApplication?.interviewNote || 'No interview details available'}
                 </div>
-                {/* Debug information */}
-                <div className="mt-4 pt-4 border-t border-gray-200">
-                  <p className="text-xs text-gray-500 mb-2">Debug Information:</p>
-                  <details className="text-xs text-gray-400">
-                    <summary className="cursor-pointer hover:text-gray-600">View Raw Data</summary>
-                    <pre className="mt-2 p-2 bg-gray-100 rounded text-xs overflow-auto max-h-32">
-                      {JSON.stringify({
-                        note: selectedInterviewApplication?.note,
-                        formDetails: selectedInterviewApplication?.formDetails,
-                        applicationData: selectedInterviewApplication?.applicationData,
-                        _raw: selectedInterviewApplication?._raw,
-                        status: selectedInterviewApplication?.status,
-                        fullData: selectedInterviewApplication
-                      }, null, 2)}
-                    </pre>
-                  </details>
-                </div>
+               
               </div>
             </div>
 
