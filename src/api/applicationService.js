@@ -296,7 +296,7 @@ export const getSchoolForms = async (schoolId, status = null) => {
         
         // Fetch student application data to get name and class
         let studentName = '—';
-        let studentClass = '—';
+        let studentstandard = '—';
         if (studId) {
           try {
             // console.log(`🔍 Fetching application data for student: ${studId}`);
@@ -304,14 +304,14 @@ export const getSchoolForms = async (schoolId, status = null) => {
             if (appResponse?.data?.data) {
               const appData = appResponse.data.data;
               studentName = appData.name || '—';
-              studentClass = appData.classCompleted || appData.class || '—';
-              // console.log(`✅ Found student data: ${studentName}, Class: ${studentClass}`);
+              studentstandard = appData.classCompleted || appData.standard || '—';
+              // console.log(`✅ Found student data: ${studentName}, Standard: ${studentstandard}`);
             }
           } catch (appError) {
             console.warn(`⚠️ Could not fetch application data for student ${studId}:`, appError.message);
             // Fallback to populated student data if available
             studentName = form?.studId?.name || form?.student?.name || '—';
-            studentClass = form?.studId?.class || form?.student?.class || '—';
+            studentstandard = form?.studId?.standard || form?.student?.standard || '—';
           }
         }
 
@@ -319,7 +319,7 @@ export const getSchoolForms = async (schoolId, status = null) => {
           id: form?._id || form?.id || `form-${idx}`,
           formId: form?._id,
           studentName: studentName,
-          class: studentClass,
+          standard: studentstandard,
           date: form?.createdAt
             ? new Date(form?.createdAt).toISOString().slice(0, 10)
             : (form?.date || '—'),

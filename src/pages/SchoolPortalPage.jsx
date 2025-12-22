@@ -147,7 +147,19 @@ const ViewStudentApplications = ({ }) => {
 
       // Fetch applications using the correct school identifier
       debugger;
-      const response = await fetchStudentApplications(schoolIdentifier);
+      let response;
+
+    try {
+      response = await fetchStudentApplications(schoolIdentifier);
+    } catch (err) {
+      // 🆕 New school → backend throws 500 when no applications exist
+      if (err.response?.status === 500) {
+        console.warn('🆕 [NO APPLICATIONS] Redirecting new school to profile page');
+        navigate('/school-portal/register', { replace: true });
+        return;
+      }
+      throw err; // real error
+    }
       console.log(`✅ [API RESPONSE] Forms fetched successfully:`, {
         totalForms: response.data?.length || 0,
         hasData: !!response.data,
@@ -196,7 +208,7 @@ const ViewStudentApplications = ({ }) => {
             detectedSchoolId: detectedSchoolId,
             status: app.status,
             studentName: app.studentName,
-            class: app.class,
+            standard: app.standard,
             date: app.date,
             applicationData: app.applicationData ? 'present' : 'missing',
             pdfUrl: app.pdfUrl ? 'present' : 'missing',
@@ -236,6 +248,11 @@ const ViewStudentApplications = ({ }) => {
 
       // For now, show all applications in this view
       const allApplications = response.data || [];
+      if (allApplications.length === 0) {
+      console.warn('🆕 [EMPTY APPLICATION LIST] Redirecting to profile');
+      navigate('/school-portal/register', { replace: true });
+      return;
+    }
 
 console.log(`📊 [FETCH RESULTS] Applications fetched:`, {
   totalForms: allApplications.length,
@@ -773,7 +790,7 @@ else if (typeof app?.formId === 'object' && app?.formId?._id) {
                 return (
                   <tr key={app._id || app.id || app.formId || `app-${index}`} className="border-b last:border-b-0 hover:bg-gray-50">
                     <td className="p-4 align-top">{app.studentName}</td>
-                    <td className="p-4 align-top">{app.class}</td>
+                    <td className="p-4 align-top">{app.standard}</td>
                     <td className="p-4 align-top">{app.date}</td>
                     <td className="p-4 align-top">
                       <button onClick={() => handleOpenDetails(app)} className="text-sm text-blue-600 hover:underline">
@@ -904,7 +921,7 @@ else if (typeof app?.formId === 'object' && app?.formId?._id) {
                 <div className="text-sm text-purple-800 space-y-1">
                   <p><strong>Student:</strong> {selectedInterviewApplication?.studId?.name || selectedInterviewApplication?.studentName || 'N/A'}</p>
                   <p><strong>School:</strong> {selectedInterviewApplication?.schoolId?.name || selectedInterviewApplication?.schoolName || 'N/A'}</p>
-                  <p><strong>Class:</strong> {selectedInterviewApplication?.class || 'N/A'}</p>
+                  <p><strong>Class:</strong> {selectedInterviewApplication?.standard || 'N/A'}</p>
                   <p><strong>Application Date:</strong> {selectedInterviewApplication?.date || 'N/A'}</p>
                 </div>
               </div>
@@ -1222,7 +1239,7 @@ const ViewShortlistedApplications = ({ }) => {
             {applications.map((app, index) => (
               <tr key={app._id || app.id || app.formId || `app-${index}`} className="border-b last:border-b-0">
                 <td className="p-4 text-gray-800">{app.studentName}</td>
-                <td className="p-4 text-gray-700">{app.class}</td>
+                <td className="p-4 text-gray-700">{app.standard}</td>
                 <td className="p-4 text-gray-700">{app.date}</td>
                 <td className="p-4 text-gray-700">
                   <StatusBadge status={(app.status || '').toString().toLowerCase()} />

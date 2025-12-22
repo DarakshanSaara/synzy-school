@@ -142,7 +142,7 @@ useEffect(() => {
 
     navigate("/");
 
-    toast.success("You have been logged out.");
+   
   };
 
   const handleShortlistToggle = async (school) => {

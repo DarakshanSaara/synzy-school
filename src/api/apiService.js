@@ -119,43 +119,65 @@ export const fetchStudentApplications = async (schoolId) => {
             }
         }
 
-        // Fetch student application data to get name and class
-        let studentName = '—';
-        let studentClass = '—';
-        if (studId) {
-            try {
-                console.log(`🔍 Fetching application data for student: ${studId}`);
-                const appResponse = await apiClient.get(`/applications/${studId}`);
-                if (appResponse?.data?.data) {
-                    const appData = appResponse.data.data;
-                    studentName = appData.name || '—';
-                    studentClass = appData.classCompleted || appData.class || '—';
-                    console.log(`✅ Found student data: ${studentName}, Class: ${studentClass}`);
-                }
-            } catch (appError) {
-                console.warn(`⚠️ Could not fetch application data for student ${studId}:`, appError.message);
-                // Fallback to populated student data if available
-                studentName = form?.studId?.name || form?.student?.name || '—';
-                studentClass = form?.studId?.class || form?.student?.class || '—';
-            }
-        }
+      // Fetch student application data using APPLICATION ID
+let studentName = '—';
+let studentClass = '—';
+let application = null;
 
-        return {
-            id: form?._id || form?.id || `form-${idx}`,
-            formId: form?._id,
-            studentName: studentName,
-            class: studentClass,
-            date: form?.createdAt
-                ? new Date(form?.createdAt).toISOString().slice(0, 10)
-                : (form?.date || '—'),
-            status: form?.status || 'Pending',
-            schoolId: form?.schoolId,
-            studId: studId, // Ensure this is always a string
-            applicationData: form,
-            pdfUrl: pdfData?.url,
-            pdfBlob: pdfData?.blob,
-            _raw: form,
-        };
+// ✅ CORRECT application_id extraction
+const application_id = form?.applicationId?._id || null;
+
+console.log('🆔 application_id (CORRECT):', application_id);
+console.log('🧾 applicationId object:', form?.applicationId);
+
+// ✅ student name is ALREADY available
+studentName = form?.applicationId?.name || '—';
+
+if (application_id) {
+  try {
+    console.log(`🔍 Fetching application ${application_id}`);
+
+    const appResponse = await apiClient.get(
+      `/applications/${application_id}`
+    );
+
+    application = appResponse?.data?.data || null;
+
+    if (application) {
+      studentClass = application.standard || '—';
+
+      console.log(
+        `✅ SUCCESS → Name: ${studentName}, Class: ${studentClass}`
+      );
+    }
+  } catch (error) {
+    console.error(
+      `❌ Failed to fetch application ${application_id}`,
+      error?.response?.data || error.message
+    );
+  }
+} else {
+  console.warn('❌ application_id missing in form.applicationId');
+}
+return {
+  id: form?._id,
+  formId: form?._id,
+  studentName,                 // ✅ WORKS
+  standard: studentClass,      // ✅ WORKS
+  date: form?.createdAt
+    ? new Date(form.createdAt).toISOString().slice(0, 10)
+    : '—',
+  status: form?.status || 'Pending',
+  schoolId: form?.schoolId,
+  studId: application?.studId || form?.applicationId?.studId || null,
+  application_id,              // ✅ CORRECT application id
+  applicationData: form,
+  pdfUrl: pdfData?.url,
+  pdfBlob: pdfData?.blob,
+  _raw: form,
+};
+
+
     })
         );
 
