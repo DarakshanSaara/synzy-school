@@ -508,7 +508,7 @@ const extractStudentId = (app, currentUser) => {
 
   if (!studId || !applicationId) return null;
 
-  const pdfUrl = `https://backend-tc-sa-v2.onrender.com/api/users/pdf/view/${studId}/${applicationId}`;
+  const pdfUrl = `https://api.synzy.in/api/users/pdf/view/${studId}/${applicationId}`;
 
   const handleOpenPdf = () => {
     try {
@@ -547,7 +547,7 @@ const extractStudentId = (app, currentUser) => {
 
   const apiBaseURL = import.meta.env.DEV
     ? ''
-    : import.meta.env.VITE_API_BASE_URL || 'https://backend-tc-sa-v2.onrender.com/api';
+    : import.meta.env.VITE_API_BASE_URL || 'https://api.synzy.in/api';
 
   const downloadUrl = import.meta.env.DEV
     ? `/api/users/pdf/download/${studentId}/${applicationId}`

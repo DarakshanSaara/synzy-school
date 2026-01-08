@@ -56,7 +56,7 @@ const ApplicationSummaryPage = () => {
   const handleViewPdf = async () => {
     try {
       console.log('Attempting to view PDF for student:', currentUser._id);
-      const baseUrl = import.meta.env.VITE_API_BASE_URL || 'https://backend-tc-sa-v2.onrender.com/api';
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || 'https://api.synzy.in/api';
       const pdfUrl = import.meta.env.DEV
         ? `/api/users/pdf/view/${currentUser._id}`
         : `${baseUrl}/users/pdf/view/${currentUser._id}`;
@@ -92,7 +92,7 @@ const ApplicationSummaryPage = () => {
   const handleDownloadPdf = async () => {
     try {
       console.log('Attempting to download PDF for student:', currentUser._id);
-      const baseUrl = import.meta.env.VITE_API_BASE_URL || 'https://backend-tc-sa-v2.onrender.com/api';
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || 'https://api.synzy.in/api';
       const pdfUrl = import.meta.env.DEV
         ? `/api/users/pdf/download/${currentUser._id}`
         : `${baseUrl}/users/pdf/download/${currentUser._id}`;

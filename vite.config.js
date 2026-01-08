@@ -22,7 +22,7 @@ export default defineConfig({
     historyApiFallback: true,
     proxy: {
       '/api': {
-        target: 'https://backend-tc-sa-v2.onrender.com',
+        target: 'https://api.synzy.in',
         changeOrigin: true,
         secure: true,
         // keep '/api' prefix so routes match backend

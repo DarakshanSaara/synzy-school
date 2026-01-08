@@ -239,7 +239,7 @@ export const viewPDFInNewTab = (studId) => {
   }
 
   // Use the correct backend URL based on environment
-  const apiBaseURL = import.meta.env.DEV ? '' : import.meta.env.VITE_API_BASE_URL || 'https://backend-tc-sa-v2.onrender.com';
+  const apiBaseURL = import.meta.env.DEV ? '' : import.meta.env.VITE_API_BASE_URL || 'https://api.synzy.in';
   const pdfUrl = import.meta.env.DEV
     ? `/api/users/pdf/view/${studId}/${applicationId}`
     : `${apiBaseURL}/users/pdf/view/${studId}/${applicationId}`;

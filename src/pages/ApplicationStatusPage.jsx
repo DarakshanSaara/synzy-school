@@ -22,7 +22,7 @@ const ApplicationStatusPage = () => {
   } catch {}
 
   // 🔥 FORCE absolute URL
-  const pdfUrl = `https://backend-tc-sa-v2.onrender.com/api/users/pdf/view/${studId}/${applicationId}`;
+  const pdfUrl = `https://api.synzy.in/api/users/pdf/view/${studId}/${applicationId}`;
 
   console.log("OPENING (FORCED):", pdfUrl);
 
