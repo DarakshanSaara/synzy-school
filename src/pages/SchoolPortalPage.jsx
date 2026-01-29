@@ -614,9 +614,11 @@ setApplications(allApplications);
       console.log('📋 Written exam details from existing form data:', app);
       console.log('🔍 All available fields in app:', Object.keys(app));
       console.log('🔍 Written exam status:', app?.status);
+      
+      
 
       // Set the application data for the modal using existing form data
-      const writtenExamNote = app?.note ||
+      const interviewNote = app?.note ||
         app?.formDetails?.note ||
         app?.applicationData?.note ||
         app?._raw?.note ||
@@ -625,7 +627,7 @@ setApplications(allApplications);
 
       setSelectedWrittenExamApplication({
         ...app,
-        writtenExamNote: writtenExamNote !== 'No written exam details available' ? writtenExamNote : 'No written exam details available'
+        interviewNote: interviewNote !== 'No written exam details available' ? interviewNote : 'No written exam details available'
       });
 
       setShowWrittenExamModal(true);
@@ -975,7 +977,7 @@ else if (typeof app?.formId === 'object' && app?.formId?._id) {
             Written Exam Notes:
           </h3>
           <div className="text-sm text-gray-700 whitespace-pre-wrap">
-            {selectedWrittenExamApplication?.writtenExamNote ||
+            {selectedWrittenExamApplication?.interviewNote ||
               "No written exam details available"}
           </div>
 
@@ -988,8 +990,8 @@ else if (typeof app?.formId === 'object' && app?.formId?._id) {
               </summary>
               <pre className="mt-2 p-2 bg-gray-100 rounded text-xs overflow-auto max-h-32">
                 {JSON.stringify({
-                  writtenExamNote:
-                    selectedWrittenExamApplication?.writtenExamNote,
+                  interviewNote:
+                    selectedWrittenExamApplication?.interviewNote,
                   fullData: selectedWrittenExamApplication,
                   allKeys: Object.keys(
                     selectedWrittenExamApplication || {}
